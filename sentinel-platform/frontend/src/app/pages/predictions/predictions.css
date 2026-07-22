@@ -225,3 +225,12 @@
   color: var(--text-dim);
   margin-top: 2px;
 }
+.factor-chip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--panel-raised);
+  border: 1px solid var(--border-soft);
+}
