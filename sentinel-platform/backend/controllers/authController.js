@@ -13,7 +13,7 @@ const register = asyncHandler(async (req, res) => {
   const existing = await User.findOne({ email });
   if (existing) return ApiResponse.error(res, 'Email already registered', 400);
 
-  const user = await User.create({ name, email, password, role, zone });
+  const user = await User.create({ name, email, password, role: role || 'admin', zone });
   const token = generateToken(user._id);
 
   return ApiResponse.success(
