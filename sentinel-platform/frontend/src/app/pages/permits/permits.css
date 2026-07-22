@@ -1,0 +1,8 @@
+.form-card { margin-bottom: 20px; }
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+.form-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--text-muted); }
+@media (max-width: 800px) { .form-grid { grid-template-columns: 1fr; } }
+.result-card { margin-bottom: 16px; font-size: 14px; }
+.result-card.approved { border-color: var(--safe); color: var(--safe); }
+.result-card.rejected { border-color: var(--crit); color: var(--crit); }
+.reason { font-size: 12.5px; color: var(--text-muted); max-width: 280px; }

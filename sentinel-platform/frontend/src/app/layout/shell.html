@@ -1,0 +1,53 @@
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">SENTINEL</div>
+        <div class="brand-sub">Safety Intelligence</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+          <span class="nav-dot"></span>
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">{{ (auth.currentUser()?.name || '?').charAt(0) }}</div>
+        <div>
+          <div class="user-name">{{ auth.currentUser()?.name || 'User' }}</div>
+          <div class="user-role">{{ auth.currentUser()?.role || '—' }}</div>
+        </div>
+      </div>
+      <button class="logout-btn" (click)="logout()">Sign out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-status">
+        <span class="live-dot"></span>
+        LIVE MONITORING
+      </div>
+      <div class="topbar-right">
+        <a routerLink="/notifications" class="bell-btn">
+          🔔
+          @if (unreadCount() > 0) {
+            <span class="bell-badge">{{ unreadCount() }}</span>
+          }
+        </a>
+        <div class="clock mono">{{ now() | date: 'HH:mm:ss' }}</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

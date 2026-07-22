@@ -1,0 +1,55 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Incidents</h1>
+    <p class="page-sub">Logged safety events across all zones</p>
+  </div>
+  <button class="btn btn-primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Cancel' : '+ Log incident' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <form class="card form-card" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <label><span>Incident ID</span><input [(ngModel)]="form.incidentId" name="incidentId" required placeholder="INC-001" /></label>
+      <label><span>Zone</span><input [(ngModel)]="form.zone" name="zone" required placeholder="Zone-A" /></label>
+      <label>
+        <span>Severity</span>
+        <select [(ngModel)]="form.severity" name="severity">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+      </label>
+      <label class="wide"><span>Description</span><input [(ngModel)]="form.description" name="description" placeholder="What happened…" /></label>
+    </div>
+    <button type="submit" class="btn btn-primary">Save incident</button>
+  </form>
+}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Incident ID</th><th>Zone</th><th>Severity</th><th>Status</th><th>Description</th><th>Time</th></tr></thead>
+      <tbody>
+        @if (loading()) {
+          <tr><td colspan="6">Loading…</td></tr>
+        } @else if (incidents().length === 0) {
+          <tr><td colspan="6">No incidents logged.</td></tr>
+        } @else {
+          @for (i of incidents(); track i._id) {
+            <tr>
+              <td class="mono">{{ i.incidentId }}</td>
+              <td>{{ i.zone }}</td>
+              <td><span class="badge" [class]="i.severity === 'critical' || i.severity === 'high' ? 'critical' : (i.severity === 'medium' ? 'warning' : 'safe')">{{ i.severity }}</span></td>
+              <td><span class="badge info">{{ i.status }}</span></td>
+              <td class="reason">{{ i.description || '—' }}</td>
+              <td class="mono">{{ i.timestamp | date: 'short' }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

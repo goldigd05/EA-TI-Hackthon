@@ -1,0 +1,58 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Sensors</h1>
+    <p class="page-sub">Temperature, gas, humidity, smoke, pressure & vibration feeds</p>
+  </div>
+  <button class="btn btn-primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Cancel' : '+ Log reading' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <form class="card form-card" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <label><span>Sensor ID</span><input [(ngModel)]="form.sensorId" name="sensorId" required placeholder="SNR-001" /></label>
+      <label>
+        <span>Type</span>
+        <select [(ngModel)]="form.sensorType" name="sensorType">
+          <option value="temperature">Temperature</option>
+          <option value="gas">Gas</option>
+          <option value="humidity">Humidity</option>
+          <option value="smoke">Smoke</option>
+          <option value="pressure">Pressure</option>
+          <option value="vibration">Vibration</option>
+        </select>
+      </label>
+      <label><span>Zone</span><input [(ngModel)]="form.zone" name="zone" required placeholder="Zone-A" /></label>
+      <label><span>Value</span><input type="number" [(ngModel)]="form.value" name="value" required /></label>
+      <label><span>Unit</span><input [(ngModel)]="form.unit" name="unit" placeholder="°C / ppm / %" /></label>
+    </div>
+    <button type="submit" class="btn btn-primary">Save reading</button>
+  </form>
+}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Sensor ID</th><th>Type</th><th>Zone</th><th>Value</th><th>Status</th><th>Timestamp</th></tr></thead>
+      <tbody>
+        @if (loading()) {
+          <tr><td colspan="6">Loading…</td></tr>
+        } @else if (sensors().length === 0) {
+          <tr><td colspan="6">No sensor readings yet.</td></tr>
+        } @else {
+          @for (s of sensors(); track s._id) {
+            <tr>
+              <td class="mono">{{ s.sensorId }}</td>
+              <td>{{ s.sensorType }}</td>
+              <td>{{ s.zone }}</td>
+              <td class="mono">{{ s.value }} {{ s.unit }}</td>
+              <td><span class="badge" [class]="s.status">{{ s.status }}</span></td>
+              <td class="mono">{{ s.timestamp | date: 'short' }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

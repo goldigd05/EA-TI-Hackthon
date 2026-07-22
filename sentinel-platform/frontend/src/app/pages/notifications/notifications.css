@@ -1,0 +1,8 @@
+.notif-list { display: flex; flex-direction: column; gap: 10px; }
+.notif-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.notif-item.unread { border-color: var(--info); }
+.notif-main { display: flex; gap: 14px; align-items: flex-start; }
+.notif-title { font-weight: 600; font-size: 14.5px; margin-bottom: 4px; }
+.notif-msg { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+.notif-meta { color: var(--text-dim); font-size: 11px; margin-top: 6px; }
+.mark-btn { flex-shrink: 0; font-size: 12px; padding: 7px 12px; }

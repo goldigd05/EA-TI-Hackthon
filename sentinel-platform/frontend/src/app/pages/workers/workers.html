@@ -1,0 +1,59 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Workers</h1>
+    <p class="page-sub">Live vitals, PPE detection, and AI risk scoring</p>
+  </div>
+  <button class="btn btn-primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Cancel' : '+ Add worker' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <form class="card form-card" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <label><span>Name</span><input [(ngModel)]="form.name" name="name" required /></label>
+      <label><span>Employee ID</span><input [(ngModel)]="form.employeeId" name="employeeId" required /></label>
+      <label><span>Zone</span><input [(ngModel)]="form.zone" name="zone" required placeholder="Zone-A" /></label>
+      <label><span>Heart rate (bpm)</span><input type="number" [(ngModel)]="form.heartRate" name="heartRate" /></label>
+      <label><span>Temperature (°C)</span><input type="number" step="0.1" [(ngModel)]="form.temperature" name="temperature" /></label>
+      <label><span>Oxygen level (%)</span><input type="number" [(ngModel)]="form.oxygenLevel" name="oxygenLevel" /></label>
+      <label class="checkbox-label">
+        <input type="checkbox" [(ngModel)]="form.helmetDetected" name="helmetDetected" />
+        <span>Helmet detected</span>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">Save worker</button>
+  </form>
+}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Name</th><th>ID</th><th>Zone</th><th>Heart rate</th><th>Temp</th><th>O₂</th><th>Helmet</th><th>Risk</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr><td colspan="10">Loading…</td></tr>
+        } @else if (workers().length === 0) {
+          <tr><td colspan="10">No workers yet. Add one above.</td></tr>
+        } @else {
+          @for (w of workers(); track w._id) {
+            <tr>
+              <td>{{ w.name }}</td>
+              <td class="mono">{{ w.employeeId }}</td>
+              <td>{{ w.zone }}</td>
+              <td class="mono">{{ w.heartRate }} bpm</td>
+              <td class="mono">{{ w.temperature }}°C</td>
+              <td class="mono">{{ w.oxygenLevel }}%</td>
+              <td>{{ w.helmetDetected ? '✅' : '❌' }}</td>
+              <td class="mono">{{ w.riskScore }}</td>
+              <td><span class="badge" [class]="w.status">{{ w.status }}</span></td>
+              <td><button class="link-danger" (click)="remove(w._id)">Remove</button></td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

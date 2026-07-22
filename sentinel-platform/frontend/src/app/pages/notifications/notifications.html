@@ -1,0 +1,30 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Alerts</h1>
+    <p class="page-sub">All system-generated safety notifications</p>
+  </div>
+</div>
+
+<div class="notif-list">
+  @if (loading()) {
+    <div class="card">Loading…</div>
+  } @else if (notifications().length === 0) {
+    <div class="card">No notifications yet.</div>
+  } @else {
+    @for (n of notifications(); track n._id) {
+      <div class="card notif-item" [class.unread]="!n.read">
+        <div class="notif-main">
+          <span class="badge" [class]="n.priority === 'critical' || n.priority === 'high' ? 'critical' : (n.priority === 'medium' ? 'warning' : 'safe')">{{ n.priority }}</span>
+          <div>
+            <div class="notif-title">{{ n.title }}</div>
+            <div class="notif-msg">{{ n.message }}</div>
+            <div class="notif-meta mono">{{ n.zone }} · {{ n.createdAt | date: 'short' }}</div>
+          </div>
+        </div>
+        @if (!n.read) {
+          <button class="btn btn-outline mark-btn" (click)="markRead(n._id)">Mark read</button>
+        }
+      </div>
+    }
+  }
+</div>

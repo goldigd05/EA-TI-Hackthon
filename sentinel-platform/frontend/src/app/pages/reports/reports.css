@@ -1,0 +1,9 @@
+.grid-3-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .grid-3-cards { grid-template-columns: 1fr; } }
+.report-type-card h3 { font-size: 16px; margin-bottom: 8px; }
+.report-type-card p { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
+.error-card { border-color: var(--crit); color: var(--crit); margin-top: 16px; }
+.list-title { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; }
+.report-list { display: flex; flex-direction: column; gap: 10px; }
+.report-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--panel-raised); border-radius: var(--radius-sm); font-size: 13.5px; }
+.cap { text-transform: capitalize; }

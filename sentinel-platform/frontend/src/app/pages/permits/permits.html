@@ -1,0 +1,63 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Permits</h1>
+    <p class="page-sub">AI cross-checks every request against live sensors before approval</p>
+  </div>
+  <button class="btn btn-primary" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Cancel' : '+ Request permit' }}
+  </button>
+</div>
+
+@if (lastResult(); as r) {
+  <div class="card result-card" [class.approved]="r.approved" [class.rejected]="!r.approved">
+    {{ r.approved ? '✅' : '🚫' }} {{ r.message }}
+  </div>
+}
+
+@if (showForm()) {
+  <form class="card form-card" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <label><span>Permit ID</span><input [(ngModel)]="form.permitId" name="permitId" required placeholder="PMT-001" /></label>
+      <label><span>Worker ID (Mongo _id)</span><input [(ngModel)]="form.workerId" name="workerId" required /></label>
+      <label>
+        <span>Permit type</span>
+        <select [(ngModel)]="form.permitType" name="permitType">
+          <option value="hot_work">Hot work</option>
+          <option value="confined_space">Confined space</option>
+          <option value="height_work">Height work</option>
+          <option value="electrical">Electrical</option>
+          <option value="excavation">Excavation</option>
+        </select>
+      </label>
+      <label><span>Zone</span><input [(ngModel)]="form.zone" name="zone" required placeholder="Zone-A" /></label>
+      <label><span>Expiry</span><input type="datetime-local" [(ngModel)]="form.expiry" name="expiry" required /></label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit for AI review</button>
+  </form>
+}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Permit ID</th><th>Type</th><th>Zone</th><th>Status</th><th>Rejection reason</th><th>Expiry</th></tr></thead>
+      <tbody>
+        @if (loading()) {
+          <tr><td colspan="6">Loading…</td></tr>
+        } @else if (permits().length === 0) {
+          <tr><td colspan="6">No permits yet.</td></tr>
+        } @else {
+          @for (p of permits(); track p._id) {
+            <tr>
+              <td class="mono">{{ p.permitId }}</td>
+              <td>{{ p.permitType }}</td>
+              <td>{{ p.zone }}</td>
+              <td><span class="badge" [class]="p.status">{{ p.status }}</span></td>
+              <td class="reason">{{ p.rejectionReason || '—' }}</td>
+              <td class="mono">{{ p.expiry | date: 'short' }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,74 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Command Center</h1>
+    <p class="page-sub">Real-time overview across all monitored zones</p>
+  </div>
+</div>
+
+@if (errorMsg()) {
+  <div class="card error-card">{{ errorMsg() }}</div>
+}
+
+@if (loading()) {
+  <div class="card">Loading live data…</div>
+} @else if (data(); as d) {
+  <div class="grid grid-4">
+    <div class="card stat-card">
+      <div class="stat-label">Total Workers</div>
+      <div class="stat-value">{{ d.totalWorkers }}</div>
+      <div class="stat-foot">on active zones</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Active Sensors</div>
+      <div class="stat-value">{{ d.activeSensors }}</div>
+      <div class="stat-foot">reporting normal</div>
+    </div>
+    <div class="card stat-card" [class.alert]="d.criticalAlerts > 0">
+      <div class="stat-label">Critical Alerts</div>
+      <div class="stat-value" [class.crit-text]="d.criticalAlerts > 0">{{ d.criticalAlerts }}</div>
+      <div class="stat-foot">sensors in critical range</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Today's Incidents</div>
+      <div class="stat-value">{{ d.todaysIncidents }}</div>
+      <div class="stat-foot">logged since midnight</div>
+    </div>
+  </div>
+
+  <div class="grid grid-2 row2">
+    <div class="card">
+      <div class="card-head">
+        <h3>Safety Score</h3>
+        <span class="badge" [class]="riskLevel(100 - d.safetyScore)">{{ d.safetyScore }} / 100</span>
+      </div>
+      <div class="gauge-track">
+        <div class="gauge-fill" [style.width.%]="d.safetyScore"
+             [class.safe]="d.safetyScore >= 70" [class.warning]="d.safetyScore >= 40 && d.safetyScore < 70" [class.critical]="d.safetyScore < 40"></div>
+      </div>
+      <p class="gauge-note">Derived from the last 100 AI risk predictions across all zones.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Current Risk Level</h3>
+        <span class="badge" [class]="riskLevel(d.currentRisk)">{{ d.currentRisk }}%</span>
+      </div>
+      <div class="gauge-track">
+        <div class="gauge-fill" [style.width.%]="d.currentRisk"
+             [class.safe]="d.currentRisk < 30" [class.warning]="d.currentRisk >= 30 && d.currentRisk < 60" [class.critical]="d.currentRisk >= 60"></div>
+      </div>
+      <p class="gauge-note">From the most recent ML prediction run.</p>
+    </div>
+  </div>
+
+  <div class="card ai-panel">
+    <div class="ai-panel-head">
+      <span class="ai-tag">AI RECOMMENDATION</span>
+      <span class="mono model-tag">Model accuracy: {{ d.predictionAccuracy }}%</span>
+    </div>
+    <p class="ai-text">{{ d.aiRecommendation }}</p>
+    @if (d.criticalWorkers > 0) {
+      <div class="ai-sub-alert">⚠ {{ d.criticalWorkers }} worker(s) currently flagged critical — check the Workers page.</div>
+    }
+  </div>
+}

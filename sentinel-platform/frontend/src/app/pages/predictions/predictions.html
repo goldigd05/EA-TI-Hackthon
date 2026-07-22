@@ -1,0 +1,107 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">AI Predictor</h1>
+    <p class="page-sub">Run the trained Random Forest model against live-style conditions</p>
+  </div>
+</div>
+
+<div class="predict-layout">
+  <form class="card" (ngSubmit)="run()">
+    <h3 class="form-title">Input conditions</h3>
+    <div class="form-grid">
+      <label><span>Temperature (°C)</span><input type="number" [(ngModel)]="form.temperature"
+          name="temperature" /></label>
+      <label><span>Gas level (ppm)</span><input type="number" [(ngModel)]="form.gas_level" name="gas_level" /></label>
+      <label><span>Humidity (%)</span><input type="number" [(ngModel)]="form.humidity" name="humidity" /></label>
+      <label><span>Pressure (kPa)</span><input type="number" [(ngModel)]="form.pressure" name="pressure" /></label>
+      <label><span>Smoke</span><input type="number" [(ngModel)]="form.smoke" name="smoke" /></label>
+      <label><span>Worker count</span><input type="number" [(ngModel)]="form.worker_count"
+          name="worker_count" /></label>
+      <label>
+        <span>Maintenance overdue?</span>
+        <select [(ngModel)]="form.maintenance" name="maintenance">
+          <option [ngValue]="0">No</option>
+          <option [ngValue]="1">Yes</option>
+        </select>
+      </label>
+      <label><span>Equipment health (%)</span><input type="number" [(ngModel)]="form.equipment_health"
+          name="equipment_health" /></label>
+      <label>
+        <span>Permit status</span>
+        <select [(ngModel)]="form.permit_status" name="permit_status">
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </label>
+      <label>
+        <span>Shift</span>
+        <select [(ngModel)]="form.shift" name="shift">
+          <option value="day">Day</option>
+          <option value="night">Night</option>
+          <option value="swing">Swing</option>
+        </select>
+      </label>
+      <label><span>Zone</span><input [(ngModel)]="form.zone" name="zone" /></label>
+    </div>
+    <button type="submit" class="btn btn-primary run-btn" [disabled]="loading()">
+      {{ loading() ? 'Running model…' : 'Run AI prediction' }}
+    </button>
+    @if (errorMsg()) { <div class="predict-error">{{ errorMsg() }}</div> }
+  </form>
+
+  <div class="card result-panel">
+    @if (!result() && !loading()) {
+    <div class="empty-state">
+      <div class="empty-icon">🧠</div>
+      <p>Set conditions on the left and run the model to see a live risk assessment.</p>
+    </div>
+    }
+    @if (loading()) {
+    <div class="empty-state">
+      <p>Querying the trained model…</p>
+    </div>
+    }
+    @if (result(); as r) {
+    <div class="risk-hero" [class]="riskClass(r.riskScore)">
+      <div class="risk-score mono">{{ r.riskScore }}%</div>
+      <div class="risk-label">Risk score</div>
+    </div>
+    <div class="result-grid">
+      <div class="result-row"><span>Predicted incident</span><strong>{{ r.incident }}</strong></div>
+      <div class="result-row"><span>Confidence</span><strong class="mono">{{ r.confidence }}%</strong></div>
+      <div class="result-row"><span>Emergency level</span><span class="badge" [class]="riskClass(r.riskScore)">{{
+          r.emergencyLevel }}</span></div>
+      <div class="result-row"><span>Zone</span><strong>{{ r.zone }}</strong></div>
+      <div class="result-row"><span>Model</span><span class="mono">{{ r.modelVersion }}</span></div>
+    </div>
+    <div class="recommendation">
+      <div class="rec-label">RECOMMENDED ACTION</div>
+      <p>{{ r.recommendation }}</p>
+    </div>
+
+    @if (r.compoundRisk; as cr) {
+    <div class="compound-panel" [class.compound-active]="cr.isCompoundRisk">
+      <div class="compound-head">
+        <span class="rec-label" [class.compound-tag]="cr.isCompoundRisk">
+          {{ cr.isCompoundRisk ? '⚠ COMPOUND RISK DETECTED' : 'FACTOR ANALYSIS' }}
+        </span>
+        <span class="mono compound-count">{{ cr.triggeredCount }}/{{ cr.factors.length }} factors elevated</span>
+      </div>
+      <p class="compound-explanation">{{ cr.explanation }}</p>
+      <div class="factor-grid">
+        @for (f of cr.factors; track f.key) {
+        <div class="factor-chip" [class.triggered]="f.triggered">
+          <span class="factor-dot"></span>
+          <div>
+            <div class="factor-label">{{ f.label }}</div>
+            <div class="factor-detail mono">{{ f.detail }}</div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+    }
+  </div>
+</div>

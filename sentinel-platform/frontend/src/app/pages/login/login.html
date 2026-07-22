@@ -1,0 +1,53 @@
+<div class="auth-page">
+  <div class="auth-grid"></div>
+
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">SENTINEL</div>
+        <div class="brand-sub">Industrial Safety Intelligence</div>
+      </div>
+    </div>
+
+    <h1 class="auth-title">{{ mode() === 'login' ? 'Sign in to your console' : 'Create your account' }}</h1>
+    <p class="auth-desc">
+      {{ mode() === 'login' ? 'Access live sensor feeds, worker vitals, and AI risk predictions.' : 'Register to start monitoring zones in real time.' }}
+    </p>
+
+    @if (error()) {
+      <div class="auth-error">{{ error() }}</div>
+    }
+
+    <form (ngSubmit)="submit()" class="auth-form">
+      @if (mode() === 'register') {
+        <label>
+          <span>Full name</span>
+          <input type="text" [(ngModel)]="form.name" name="name" required placeholder="Aditi Sharma" />
+        </label>
+      }
+      <label>
+        <span>Email</span>
+        <input type="email" [(ngModel)]="form.email" name="email" required placeholder="you@plant.com" />
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" [(ngModel)]="form.password" name="password" required placeholder="••••••••" />
+      </label>
+      @if (mode() === 'register') {
+        <label>
+          <span>Zone</span>
+          <input type="text" [(ngModel)]="form.zone" name="zone" placeholder="Zone-A" />
+        </label>
+      }
+
+      <button type="submit" class="btn btn-primary auth-submit" [disabled]="loading()">
+        {{ loading() ? 'Please wait…' : (mode() === 'login' ? 'Sign in' : 'Create account') }}
+      </button>
+    </form>
+
+    <button class="auth-toggle" (click)="toggleMode()">
+      {{ mode() === 'login' ? "Don't have an account? Register" : 'Already registered? Sign in' }}
+    </button>
+  </div>
+</div>

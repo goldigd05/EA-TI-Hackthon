@@ -1,0 +1,49 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Reports</h1>
+    <p class="page-sub">Generate PDF safety summaries on demand</p>
+  </div>
+</div>
+
+<div class="grid grid-3-cards">
+  <div class="card report-type-card">
+    <h3>Daily</h3>
+    <p>Last 24 hours of incidents, predictions, and alerts.</p>
+    <button class="btn btn-outline" (click)="generate('daily')" [disabled]="loading() === 'daily'">
+      {{ loading() === 'daily' ? 'Generating…' : 'Generate' }}
+    </button>
+  </div>
+  <div class="card report-type-card">
+    <h3>Weekly</h3>
+    <p>7-day rollup across all zones.</p>
+    <button class="btn btn-outline" (click)="generate('weekly')" [disabled]="loading() === 'weekly'">
+      {{ loading() === 'weekly' ? 'Generating…' : 'Generate' }}
+    </button>
+  </div>
+  <div class="card report-type-card">
+    <h3>Monthly</h3>
+    <p>Full monthly compliance and safety trend report.</p>
+    <button class="btn btn-outline" (click)="generate('monthly')" [disabled]="loading() === 'monthly'">
+      {{ loading() === 'monthly' ? 'Generating…' : 'Generate' }}
+    </button>
+  </div>
+</div>
+
+@if (errorMsg()) { <div class="card error-card">{{ errorMsg() }}</div> }
+
+@if (results().length > 0) {
+  <div class="card" style="margin-top: 20px;">
+    <h3 class="list-title">Generated reports</h3>
+    <div class="report-list">
+      @for (r of results(); track r.result.downloadUrl) {
+        <div class="report-item">
+          <div>
+            <strong class="cap">{{ r.type }}</strong> report —
+            {{ r.result.summary.incidentCount }} incidents, {{ r.result.summary.predictionCount }} predictions
+          </div>
+          <a class="btn btn-primary" [href]="downloadUrl(r.result.downloadUrl)" target="_blank">Download PDF</a>
+        </div>
+      }
+    </div>
+  </div>
+}

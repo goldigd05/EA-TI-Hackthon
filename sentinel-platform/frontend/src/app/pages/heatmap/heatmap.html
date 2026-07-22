@@ -1,0 +1,100 @@
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Zone Risk Heatmap</h1>
+        <p class="page-sub">Live plant layout — sensors, worker vitals, and AI predictions fused into one risk view per
+            zone</p>
+    </div>
+    @if (lastUpdated(); as t) {
+    <div class="update-tag mono">Updated {{ t | date: 'HH:mm:ss' }}</div>
+    }
+</div>
+
+@if (loading()) {
+<div class="card">Loading zone data…</div>
+} @else if (zones().length === 0) {
+<div class="card">No zone data yet. Add workers or sensors with a zone (e.g. "Zone-A") to see them here.</div>
+} @else {
+<div class="heatmap-layout">
+    <div class="card layout-card">
+        <div class="layout-head">
+            <span class="layout-title">PLANT LAYOUT</span>
+            <div class="legend">
+                <span class="legend-item"><span class="legend-dot safe"></span>Safe</span>
+                <span class="legend-item"><span class="legend-dot warning"></span>Elevated</span>
+                <span class="legend-item"><span class="legend-dot critical"></span>Critical</span>
+            </div>
+        </div>
+        <div class="floor-grid">
+            @for (z of zones(); track z.zone) {
+            <button class="zone-tile" [class]="z.riskLevel" [class.selected]="selected()?.zone === z.zone"
+                [class.span-2]="tileSpan(z) === 'span-2'" (click)="select(z)">
+                <div class="zone-tile-top">
+                    <span class="zone-name">{{ z.zone }}</span>
+                    @if (z.compoundRiskActive) { <span class="compound-badge">⚠ COMPOUND</span> }
+                </div>
+                <div class="zone-score mono">{{ z.riskScore }}%</div>
+                <div class="zone-meta">{{ z.workerCount }} workers · {{ z.sensorCount }} sensors</div>
+            </button>
+            }
+        </div>
+    </div>
+
+    <div class="card detail-card">
+        @if (selected(); as z) {
+        <div class="detail-head">
+            <div>
+                <div class="detail-zone">{{ z.zone }}</div>
+                <span class="badge" [class]="z.riskLevel">{{ z.riskLevel }}</span>
+            </div>
+            <div class="detail-score mono" [class]="z.riskLevel">{{ z.riskScore }}%</div>
+        </div>
+
+        @if (z.compoundRiskActive) {
+        <div class="compound-alert">
+            ⚠ Multiple risk signals active simultaneously in this zone — this is a compound risk condition.
+        </div>
+        }
+
+        <div class="detail-stats">
+            <div class="detail-stat">
+                <div class="detail-stat-label">Workers</div>
+                <div class="detail-stat-value mono">{{ z.workerCount }}</div>
+                @if (z.criticalWorkers > 0) { <div class="detail-stat-flag">{{ z.criticalWorkers }} critical</div> }
+            </div>
+            <div class="detail-stat">
+                <div class="detail-stat-label">Sensors</div>
+                <div class="detail-stat-value mono">{{ z.sensorCount }}</div>
+                @if (z.criticalSensors > 0) { <div class="detail-stat-flag">{{ z.criticalSensors }} critical</div> }
+            </div>
+            <div class="detail-stat">
+                <div class="detail-stat-label">Warnings</div>
+                <div class="detail-stat-value mono">{{ z.warningSensors }}</div>
+            </div>
+        </div>
+
+        @if (z.activeSignals.length > 0) {
+        <div class="signals-block">
+            <div class="signals-title">ACTIVE RISK SIGNALS</div>
+            <ul class="signals-list">
+                @for (s of z.activeSignals; track s) { <li>{{ s }}</li> }
+            </ul>
+        </div>
+        }
+
+        @if (z.latestPrediction; as p) {
+        <div class="prediction-block">
+            <div class="signals-title">LATEST AI PREDICTION</div>
+            <div class="prediction-incident">{{ p.incident }}</div>
+            <p class="prediction-rec">{{ p.recommendation }}</p>
+        </div>
+        }
+
+        @if (z.activeSignals.length === 0 && !z.latestPrediction) {
+        <p class="no-signals">No active risk signals in this zone. All readings within normal range.</p>
+        }
+        } @else {
+        <p class="no-signals">Select a zone to see details.</p>
+        }
+    </div>
+</div>
+}
