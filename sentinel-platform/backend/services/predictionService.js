@@ -11,7 +11,7 @@ const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
 const getPrediction = async (payload) => {
   try {
     const { data } = await axios.post(`${ML_SERVICE_URL}/predict`, payload, {
-      timeout: 8000,
+      timeout: 120000,
       headers: { 'Content-Type': 'application/json' },
     });
 
